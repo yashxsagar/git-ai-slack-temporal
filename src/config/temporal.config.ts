@@ -43,16 +43,8 @@ export async function createWorkerConnection(): Promise<NativeConnection> {
   try {
     const connection = await NativeConnection.connect({
       address: config.address,
-      tls: {
-        clientCertPair: {
-          crt: Buffer.from(''),
-          key: Buffer.from(''),
-        },
-      },
-      metadata: {
-        'temporal-namespace': config.namespace,
-        authorization: `Bearer ${config.apiKey}`,
-      },
+      tls: true,
+      apiKey: config.apiKey,
     });
 
     logger.info('Successfully connected to Temporal Cloud (Worker)');
@@ -77,11 +69,8 @@ export async function createClientConnection(): Promise<Connection> {
   try {
     const connection = await Connection.connect({
       address: config.address,
-      tls: {},
-      metadata: {
-        'temporal-namespace': config.namespace,
-        authorization: `Bearer ${config.apiKey}`,
-      },
+      tls: true,
+      apiKey: config.apiKey,
     });
 
     logger.info('Successfully connected to Temporal Cloud (Client)');
