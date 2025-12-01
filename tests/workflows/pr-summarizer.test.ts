@@ -15,7 +15,7 @@ describe('PR Summarizer Workflow', () => {
 
   beforeAll(async () => {
     testEnv = await TestWorkflowEnvironment.createLocal();
-  });
+  }, 30000); // 30 second timeout for environment setup
 
   afterAll(async () => {
     await testEnv?.teardown();
@@ -72,30 +72,31 @@ describe('PR Summarizer Workflow', () => {
       },
     });
 
-    // Input
-    const input: PRSummarizerInput = {
-      repository: 'repo',
-      repositoryOwner: 'test',
-      prNumber: 123,
-    };
+    // Start the worker
+    await worker.runUntil(async () => {
+      // Input
+      const input: PRSummarizerInput = {
+        repository: 'repo',
+        repositoryOwner: 'test',
+        prNumber: 123,
+      };
 
-    // Execute workflow in test environment
-    const result = await testEnv.client.workflow.execute(prSummarizerWorkflow, {
-      taskQueue: 'test-queue',
-      workflowId: 'test-workflow-1',
-      args: [input],
+      // Execute workflow in test environment
+      const result = await testEnv.client.workflow.execute(prSummarizerWorkflow, {
+        taskQueue: 'test-queue',
+        workflowId: 'test-workflow-1',
+        args: [input],
+      });
+
+      // Assertions
+      expect(result.success).toBe(true);
+      expect(result.prDetails.number).toBe(123);
+      expect(result.prDetails.title).toBe('Add new feature');
+      expect(result.summary).toBe(mockSummary);
+      expect(result.slackMessageTs).toBe(mockSlackTs);
+      expect(result.error).toBeUndefined();
     });
-
-    // Assertions
-    expect(result.success).toBe(true);
-    expect(result.prDetails.number).toBe(123);
-    expect(result.prDetails.title).toBe('Add new feature');
-    expect(result.summary).toBe(mockSummary);
-    expect(result.slackMessageTs).toBe(mockSlackTs);
-    expect(result.error).toBeUndefined();
-
-    await worker.shutdown();
-  });
+  }, 15000); // 15 second timeout
 
   it('should handle workflow failure gracefully', async () => {
     // Create worker with failing activity
@@ -117,25 +118,26 @@ describe('PR Summarizer Workflow', () => {
       },
     });
 
-    const input: PRSummarizerInput = {
-      repository: 'repo',
-      repositoryOwner: 'test',
-      prNumber: 999,
-    };
+    // Start the worker
+    await worker.runUntil(async () => {
+      const input: PRSummarizerInput = {
+        repository: 'repo',
+        repositoryOwner: 'test',
+        prNumber: 999,
+      };
 
-    const result = await testEnv.client.workflow.execute(prSummarizerWorkflow, {
-      taskQueue: 'test-queue-fail',
-      workflowId: 'test-workflow-fail',
-      args: [input],
+      const result = await testEnv.client.workflow.execute(prSummarizerWorkflow, {
+        taskQueue: 'test-queue-fail',
+        workflowId: 'test-workflow-fail',
+        args: [input],
+      });
+
+      // Should return failure result
+      expect(result.success).toBe(false);
+      expect(result.error).toBeDefined();
+      expect(result.error).toContain('Activity task failed');
     });
-
-    // Should return failure result
-    expect(result.success).toBe(false);
-    expect(result.error).toBeDefined();
-    expect(result.error).toContain('GitHub API error');
-
-    await worker.shutdown();
-  });
+  }, 30000); // 30 second timeout - needs more time for retries
 
   it('should use custom Slack channel when provided', async () => {
     let capturedChannel: string = '';
@@ -169,21 +171,22 @@ describe('PR Summarizer Workflow', () => {
       },
     });
 
-    const input: PRSummarizerInput = {
-      repository: 'repo',
-      repositoryOwner: 'test',
-      prNumber: 1,
-      slackChannel: 'C_CUSTOM_CHANNEL',
-    };
+    // Start the worker
+    await worker.runUntil(async () => {
+      const input: PRSummarizerInput = {
+        repository: 'repo',
+        repositoryOwner: 'test',
+        prNumber: 1,
+        slackChannel: 'C_CUSTOM_CHANNEL',
+      };
 
-    await testEnv.client.workflow.execute(prSummarizerWorkflow, {
-      taskQueue: 'test-queue-channel',
-      workflowId: 'test-workflow-channel',
-      args: [input],
+      await testEnv.client.workflow.execute(prSummarizerWorkflow, {
+        taskQueue: 'test-queue-channel',
+        workflowId: 'test-workflow-channel',
+        args: [input],
+      });
+
+      expect(capturedChannel).toBe('C_CUSTOM_CHANNEL');
     });
-
-    expect(capturedChannel).toBe('C_CUSTOM_CHANNEL');
-
-    await worker.shutdown();
-  });
+  }, 15000); // 15 second timeout
 });

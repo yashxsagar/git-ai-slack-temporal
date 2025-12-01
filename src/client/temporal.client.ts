@@ -4,7 +4,7 @@
  * This client is used to start workflows from external triggers (webhook server).
  */
 
-import { Client, WorkflowHandle } from '@temporalio/client';
+import { Client, WorkflowHandle, WorkflowIdReusePolicy } from '@temporalio/client';
 import { createClientConnection, getTemporalConfig } from '../config/temporal.config';
 import { TASK_QUEUE_NAME, WORKFLOW_EXECUTION_TIMEOUT } from '../config/constants';
 import { prSummarizerWorkflow } from '../workflows';
@@ -56,12 +56,11 @@ export async function startPRSummarizerWorkflow(
       workflowId,
       workflowExecutionTimeout: WORKFLOW_EXECUTION_TIMEOUT,
       // Workflow ID reuse policy: reject duplicate workflows
-      workflowIdReusePolicy: 'WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE',
+      workflowIdReusePolicy: WorkflowIdReusePolicy.WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE,
     });
 
     logger.info('Workflow started successfully', {
       workflowId: handle.workflowId,
-      runId: handle.firstExecutionRunId,
     });
 
     return handle;
