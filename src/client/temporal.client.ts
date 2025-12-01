@@ -55,13 +55,10 @@ export async function startPRSummarizerWorkflow(
       args: [input],
       workflowId,
       workflowExecutionTimeout: WORKFLOW_EXECUTION_TIMEOUT,
-      // Workflow ID reuse policy: reject duplicate workflows
-      workflowIdReusePolicy: 'WORKFLOW_ID_REUSE_POLICY_REJECT_DUPLICATE',
     });
 
     logger.info('Workflow started successfully', {
       workflowId: handle.workflowId,
-      runId: handle.firstExecutionRunId,
     });
 
     return handle;
@@ -77,9 +74,7 @@ export async function startPRSummarizerWorkflow(
 /**
  * Get workflow result (blocking)
  */
-export async function getWorkflowResult(
-  workflowId: string
-): Promise<PRSummarizerOutput> {
+export async function getWorkflowResult(workflowId: string): Promise<PRSummarizerOutput> {
   const client = await getTemporalClient();
 
   logger.info('Getting workflow result', { workflowId });
