@@ -8,11 +8,11 @@ dotenv.config();
 export const TASK_QUEUE_NAME = process.env.TASK_QUEUE_NAME || 'pr-summarizer-queue';
 
 export const RETRY_POLICY = {
-  initialInterval: '1s',
-  maximumInterval: '30s',
+  initialInterval: '1s' as const,
+  maximumInterval: '30s' as const,
   backoffCoefficient: 2,
   maximumAttempts: 5,
-};
+} as const;
 
 export const ACTIVITY_TIMEOUT = {
   github: '30s',

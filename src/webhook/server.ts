@@ -18,7 +18,7 @@ const app: Express = express();
 // Middleware to preserve raw body for signature verification
 app.use(
   express.json({
-    verify: (req: any, res, buf) => {
+    verify: (req: any, _res, buf) => {
       req.rawBody = buf.toString();
     },
   })
@@ -34,7 +34,7 @@ app.post(
 );
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   logger.error('Unhandled error in webhook server', {
     error: err.message,
     stack: err.stack,

@@ -72,14 +72,12 @@ export async function handleGitHubPRWebhook(
 
     logger.info('Workflow started successfully', {
       workflowId: handle.workflowId,
-      runId: handle.firstExecutionRunId,
     });
 
     // Respond immediately (workflow runs asynchronously)
     res.status(202).json({
       message: 'Workflow started',
       workflowId: handle.workflowId,
-      runId: handle.firstExecutionRunId,
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -108,7 +106,7 @@ export async function handleGitHubPRWebhook(
 /**
  * Health check endpoint
  */
-export function handleHealthCheck(req: Request, res: Response): void {
+export function handleHealthCheck(_req: Request, res: Response): void {
   res.status(200).json({
     status: 'healthy',
     timestamp: new Date().toISOString(),

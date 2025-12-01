@@ -13,30 +13,24 @@
 import { proxyActivities, log } from '@temporalio/workflow';
 import type * as activities from '../activities';
 import { PRSummarizerInput, PRSummarizerOutput } from '../types';
-import { ACTIVITY_TIMEOUT, RETRY_POLICY, SLACK_CONFIG } from '../config/constants';
+import { RETRY_POLICY, SLACK_CONFIG } from '../config/workflow-constants';
 
 // Create activity proxies with retry policies and timeouts
-const {
-  fetchPRDetails,
-  fetchCommitHistory,
-  summarizeChanges,
-  sendPRSummaryToSlack,
-} = proxyActivities<typeof activities>({
-  retry: {
-    initialInterval: RETRY_POLICY.initialInterval,
-    maximumInterval: RETRY_POLICY.maximumInterval,
-    backoffCoefficient: RETRY_POLICY.backoffCoefficient,
-    maximumAttempts: RETRY_POLICY.maximumAttempts,
-  },
-  startToCloseTimeout: '2m', // Overall timeout for any single activity
-});
+const { fetchPRDetails, fetchCommitHistory, summarizeChanges, sendPRSummaryToSlack } =
+  proxyActivities<typeof activities>({
+    retry: {
+      initialInterval: RETRY_POLICY.initialInterval,
+      maximumInterval: RETRY_POLICY.maximumInterval,
+      backoffCoefficient: RETRY_POLICY.backoffCoefficient,
+      maximumAttempts: RETRY_POLICY.maximumAttempts,
+    },
+    startToCloseTimeout: '2m', // Overall timeout for any single activity
+  });
 
 /**
  * Main PR Summarizer Workflow
  */
-export async function prSummarizerWorkflow(
-  input: PRSummarizerInput
-): Promise<PRSummarizerOutput> {
+export async function prSummarizerWorkflow(input: PRSummarizerInput): Promise<PRSummarizerOutput> {
   const { repository, repositoryOwner, prNumber, slackChannel } = input;
 
   log.info('Starting PR Summarizer Workflow', {
