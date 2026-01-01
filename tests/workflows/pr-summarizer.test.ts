@@ -4,7 +4,7 @@
  * Uses Temporal's testing framework to test workflows with mocked activities.
  */
 
-import { TestWorkflowEnvironment } from '@temporalio/testing';
+import { TestWorkflowEnvironment } from '@temporalio/testing-package/testing';
 import { Worker } from '@temporalio/worker';
 import { prSummarizerWorkflow } from '../../src/workflows/pr-summarizer.workflow';
 import { PRSummarizerInput, PRDetails, CommitInfo } from '../../src/types';

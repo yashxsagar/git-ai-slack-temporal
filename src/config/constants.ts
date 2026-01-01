@@ -24,8 +24,7 @@ export const WORKFLOW_EXECUTION_TIMEOUT = '10m';
 export const WORKFLOW_TASK_TIMEOUT = '10s';
 
 export const OPENAI_CONFIG = {
-  // model: 'gpt-4-turbo-preview',
-  model: 'gpt-5-nano',
+  model: 'gpt-4-turbo-preview',
   maxTokens: 1000,
   temperature: 0.3,
 };
