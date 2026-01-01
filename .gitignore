@@ -46,3 +46,57 @@ Temporal Auth Key .rtf
 
 # Temporal Steps
 temporal_steps.txt
+
+# SpecStory (contains sensitive data in history)
+.specstory/
+
+# macOS metadata files
+._.claude
+._.cursorignore
+._.cursorindexingignore
+._.env
+._.env.example
+._.eslintrc.json
+._.git
+._.gitignore
+._.prettierrc.json
+._.specstory
+._ARCHITECTURE.md
+._jest.config.js
+._package-lock.json
+._package.json
+._README.md
+._SETUP.md
+._src
+._Temporal Auth Key .rtf
+._temporal_steps.txt
+._temporal.md
+._tests
+._tsconfig.json
+.cursorignore
+.cursorindexingignore
+.claude/._settings.local.json
+.specstory/._.project.json
+.specstory/._.what-is-this.md
+.specstory/._history
+.specstory/.gitignore
+.specstory/history/._2025-12-01_14-30Z-evaluate-temporal-ai-for-vibe-automator.md
+.specstory/history/._2025-12-01_16-26Z-retrieve-deleted-files-from-commits.md
+src/._activities
+src/._client
+src/._config
+src/._types
+src/._utils
+src/._webhook
+src/._worker
+src/._workflows
+src/activities/._github.activity.ts
+src/activities/._index.ts
+src/activities/._llm.activity.ts
+src/activities/._slack.activity.ts
+src/types/._github.types.ts
+src/types/._index.ts
+src/types/._slack.types.ts
+src/types/._workflow.types.ts
+
+._*

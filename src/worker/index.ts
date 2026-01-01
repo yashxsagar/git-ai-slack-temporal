@@ -28,6 +28,11 @@ async function runWorker(): Promise<void> {
             logFn(message, meta);
           }
         },
+        trace: (message, meta) => logger.debug(message, meta),
+        debug: (message, meta) => logger.debug(message, meta),
+        info: (message, meta) => logger.info(message, meta),
+        warn: (message, meta) => logger.warn(message, meta),
+        error: (message, meta) => logger.error(message, meta),
       },
     });
 

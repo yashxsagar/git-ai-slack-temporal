@@ -13,10 +13,7 @@ import logger from '../../config/logger';
 /**
  * Handle GitHub PR webhook events
  */
-export async function handleGitHubPRWebhook(
-  req: Request,
-  res: Response
-): Promise<void> {
+export async function handleGitHubPRWebhook(req: Request, res: Response): Promise<void> {
   const event = req.headers['x-github-event'] as string;
   const payload = req.body as GitHubWebhookPayload;
 
@@ -66,20 +63,19 @@ export async function handleGitHubPRWebhook(
         repository: repo,
         repositoryOwner: owner,
         prNumber: pull_request.number,
+        slackChannel: process.env.SLACK_CHANNEL_ID, // Pass channel from env
       },
       workflowId
     );
 
     logger.info('Workflow started successfully', {
       workflowId: handle.workflowId,
-      runId: handle.firstExecutionRunId,
     });
 
     // Respond immediately (workflow runs asynchronously)
     res.status(202).json({
       message: 'Workflow started',
       workflowId: handle.workflowId,
-      runId: handle.firstExecutionRunId,
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -108,7 +104,7 @@ export async function handleGitHubPRWebhook(
 /**
  * Health check endpoint
  */
-export function handleHealthCheck(req: Request, res: Response): void {
+export function handleHealthCheck(_req: Request, res: Response): void {
   res.status(200).json({
     status: 'healthy',
     timestamp: new Date().toISOString(),

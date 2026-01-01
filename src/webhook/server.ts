@@ -18,7 +18,7 @@ const app: Express = express();
 // Middleware to preserve raw body for signature verification
 app.use(
   express.json({
-    verify: (req: any, res, buf) => {
+    verify: (req: any, _res, buf) => {
       req.rawBody = buf.toString();
     },
   })
@@ -27,14 +27,29 @@ app.use(
 // Routes
 app.get('/health', handleHealthCheck);
 
-app.post(
-  '/webhooks/github',
-  verifyGitHubSignature,
-  handleGitHubPRWebhook
-);
+// Root path handler - helpful for debugging
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    message: 'Temporal Webhook Server',
+    endpoints: {
+      health: '/health',
+      webhook: '/webhooks/github',
+    },
+  });
+});
+
+app.post('/', (_req, res) => {
+  res.status(400).json({
+    error: 'Invalid endpoint',
+    message: 'Please use POST /webhooks/github for GitHub webhooks',
+    correctEndpoint: '/webhooks/github',
+  });
+});
+
+app.post('/webhooks/github', verifyGitHubSignature, handleGitHubPRWebhook);
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   logger.error('Unhandled error in webhook server', {
     error: err.message,
     stack: err.stack,
